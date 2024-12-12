@@ -1,0 +1,204 @@
+#include <iostream>
+using namespace std;
+int taskMenu()
+{
+	int variant;
+	cout << "Выберите задание: " << endl;
+	cout << "1) Вывести, сколько памяти (в байтах) на компьютере отводится под различные типы данных со спецификаторами и без.\n"
+		<< "2) Вывести на экран двоичное представление в памяти (все разряды) целого числа.\n"
+		<< "3) Вывести на экран двоичное представление в памяти (все разряды) типа float.\n"
+		<< "4) Вывести на экран двоичное представление в памяти (все разряды) типа double." << endl;
+	cout << "Задание: ";
+	cin >> variant;
+	return variant;
+}
+int main()
+{
+	while (true) {
+		setlocale(0, "");
+		int variant = taskMenu();
+		bool invert = true;
+		int option, num;
+		unsigned int mask = 1 << (sizeof(int) * 8 - 1);
+		unsigned int c2mask = 1 << (sizeof(int) * 8 - 1);
+		unsigned int c3mask = 1 << (sizeof(float) * 8 - 1);
+		unsigned int c4mask = 1 << (sizeof(int) * 8 - 1);
+		switch (variant) {
+		case 1:
+			cout << "int: " << sizeof(int) << endl << "short int: " << sizeof(short int) << endl << "long int: " << sizeof(long int) << endl << "float: " << sizeof(float) << endl << "double: " << sizeof(double) << endl << "long double: " << sizeof(long double) << endl << "char: " << sizeof(char) << endl << "bool: " << sizeof(bool);
+			cout << endl << endl;
+			break;
+		case 2:
+			int a;
+			cout << "Введите число типа int: ";
+			cin >> a;
+			cout << endl << "Введите номер бита который следует оставить: ";
+			cin >> num;
+			for (int I = 1; I <= sizeof(int) * 8; I++, c2mask >>= 1) {
+				if (a & c2mask) {
+					cout << "1";
+				}
+				else {
+					cout << "0";
+				}
+				if (I % 8 == 0 || I == 1) {
+					cout << " ";
+				}
+			}
+			cout << endl << "ИДЗ:" << endl;
+			while (invert) {
+				cout << "Инвертировать биты числа?" << endl << "1. Да   " << "2. Нет" << endl;
+				cin >> option;
+				if (option == 1) {
+					c2mask = 1 << num - 1;
+					a = a ^ c2mask;
+					a = ~a;
+					for (int I = 1; I <= sizeof(int) * 8; I++, mask >>= 1) {
+						if (a & mask) {
+							cout << "1";
+						}
+						else {
+							cout << "0";
+						}
+						if (I % 8 == 0 || I == 1) {
+							cout << " ";
+						}
+					}
+					cout << endl << "Число после инвертирования: " << a << endl;
+					invert = true;
+					mask = 1 << 31;
+				}
+				else {
+					invert = false;
+				}
+			}
+			cout << endl << endl;
+			break;
+		case 3:
+			union {
+				float l;
+				int b;
+			};
+			cout << "Введите число типа float: ";
+			cin >> l;
+			for (int I = 1; I <= sizeof(float) * 8; I++, c3mask >>= 1) {
+				if (b & c3mask) {
+					cout << "1";
+				}
+				else {
+					cout << "0";
+				}
+				if (sizeof(float) * 8 - I == sizeof(float) * 8 - 1) {
+					cout << " ";
+				}
+				if (sizeof(float) * 8 - I == 23) {
+					cout << " ";
+				}
+			}
+			cout << endl << "ИДЗ:" << endl;
+			while (invert) {
+				cout << "Инвертировать биты числа?" << endl << "1. Да   " << "2. Нет" << endl;
+				cin >> option;
+				if (option == 1) {
+					b = ~b;
+					for (int I = 1; I <= sizeof(float) * 8; I++, mask >>= 1) {
+						if (b & mask) {
+							cout << "1";
+						}
+						else {
+							cout << "0";
+						}
+						if (I % 8 == 0 || I == 1) {
+							cout << " ";
+						}
+					}
+					invert = true;
+					mask = 1 << 31;
+				}
+				else {
+					invert = false;
+				}
+			}
+			cout << endl << endl;
+			break;
+		case 4:
+			union {
+				double db;
+				unsigned int c[2];
+			};
+			cout << "Введите число типа double:" << endl;
+			cin >> db;
+			for (int I = 0; I < sizeof(int) * 8; I++) {
+				if (c[1] & c4mask) {
+					cout << "1";
+				}
+				else {
+					cout << "0";
+				}
+				if (I == 0 or I == 11) {
+					cout << " ";
+				}
+				c4mask >>= 1;
+				if (c4mask == 0) {
+					c4mask = 1 << 31;
+				}
+			}
+			for (int I = 0; I < sizeof(int) * 8; I++) {
+				if (c[0] & c4mask) {
+					cout << "1";
+				}
+				else {
+					cout << "0";
+				}
+				c4mask >>= 1;
+			}
+			cout << endl << "ИДЗ:" << endl;
+			while (invert) {
+				cout << "Инвертировать биты числа?" << endl << "1. Да   " << "2. Нет" << endl;
+				cin >> option;
+				if (option == 1) {
+					c[0] = ~c[0];
+					c[1] = ~c[1];
+					for (int I = 0; I < sizeof(int) * 8; I++) {
+						if (c[1] & mask) {
+							cout << "1";
+						}
+						else {
+							cout << "0";
+						}
+						if (I == 0 or I == 11) {
+							cout << " ";
+						}
+						mask >>= 1;
+						if (mask == 0) {
+							mask = 1 << 31;
+						}
+					}
+					for (int I = 0; I < sizeof(int) * 8; I++) {
+						if (c[0] & mask) {
+							cout << "1";
+						}
+						else {
+							cout << "0";
+						}
+						mask >>= 1;
+						if (mask == 0) {
+							mask = 1 << 31;
+						}
+					}
+					invert = true;
+					cout << endl;
+				}
+				else {
+					invert = false;
+				}
+			}
+			cout << endl << endl;
+			break;
+		default:
+			cout << "Некорректный ввод";
+			exit(EXIT_FAILURE);
+
+		}
+	}
+}
